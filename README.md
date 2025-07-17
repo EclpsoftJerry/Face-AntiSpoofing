@@ -1,5 +1,4 @@
 # Face-AntiSpoofing
-Face Anti-Spoofing project. Lanit-Tercom summer school 2022
 
 **Spoofing attack** - an attempt to deceive the identification system by presenting it with a fake image of a face
 
@@ -7,23 +6,7 @@ Face Anti-Spoofing project. Lanit-Tercom summer school 2022
 
 - **Print attack**: The attacker shows the picture of other person printed on a sheet of paper 
 - **Replay attack**: The attacker shows the screen of another device that plays a pre-recorded photo/video of the other person.
-## Demo
-https://user-images.githubusercontent.com/6792913/190157993-5c484b2f-834b-4914-b230-4a92021b8ef4.mp4
 
-To process your videofile for detecting spoofing attacks run
-```sh
-python video_predict.py -i path/to/video.mp4 -o path/to/out_video.mp4 -m path/to/model.onnx -t 0.75 
-```
-Be sure to replace the arguments with your own. Running the script without the `-i` argument will start the prediction on the video stream from the webcam. 
-<details><summary> video_predict.py arguments details:</summary>
-<p>
-
-`--input` (`-i`) - Path to video for predictions, if not passed webcam stream will be processed  
-`--output` (`-o`) - Path to save processed video, if not passed the processed video will not be saved   
-`--model_path` (`-m`) - Path to pretrained ONNX model    
-`--threshold` (`-t`) - Real face probability threshold above which the prediction is considered true, default 0.5    
-</p>
-</details>
 
 Pretrained models located in the directory *.\saved_models*
 
@@ -31,22 +14,10 @@ Pretrained models located in the directory *.\saved_models*
 Training was performed on the *CelebA Spoof* dataset ([GitHub](https://github.com/ZhangYuanhan-AI/CelebA-Spoof) | [Kaggle](https://www.kaggle.com/datasets/attentionlayer241/celeba-spoof-for-face-antispoofing)).
 ## Model
 In this project we train and test the CNN models with architecture presented in [Silent-Face-Anti-Spoofing GitHub repository](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing/) to detect Spoof attacks. The model architecture consists of the main branch of classification of attack type and the auxiliary supervision branch of Fourier spectrum. The Fourier transform is used only in the training stage.
-### Example images of train loader with Fourier spectrum
-![image](https://user-images.githubusercontent.com/6792913/190170749-437e443d-0ce7-43e6-9238-f4b2212da348.png)
 ## Tasks
 Training was performed for two types of classification tasks:
 1. **Live Face** / **Spoof Attack** (binary classification)
 2. **Live Face** / **Print Attack** / **Replay Attack**  
-
-Examples and the results of model training you can find in Jupyter Notebook 
-### [FaceAntiSpoofing.ipynb Gist](https://gist.github.com/hairymax/021a8cd550a3c0fa14c8e6ae815265c9) (or [via nbviewer](https://nbviewer.org/gist/hairymax/021a8cd550a3c0fa14c8e6ae815265c9))
-
-Best models metrics on the test set
-
-|Task | Accuracy | AUC-ROC | Precision | Recall | F1 score |
-| ---- | ---- | ---- | ---- | ---- | ---- |
-|Live / Spoof | 0.9292 | 0.986919 | 0.974257 | 0.904714 | 0.938198 |
-|Live / Print / Replay | 0.9328 | 0.990246 | 0.982771 | 0.902694 | 0.941032 |
 
 In order to evaluate metrics Print / Replay classes have been reduced to one Spoof class after predictions
 ## Using the code

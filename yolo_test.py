@@ -8,12 +8,12 @@ from ultralytics import YOLO
 #model = YOLO("yolov8x.pt")
 #model = YOLO("saved_models/yolov8l.pt")
 
-model = YOLO("yolov8x.pt")
+model = YOLO("yolov8m.pt")
 #model = YOLO("yolov9c.pt")
 #model = YOLO("yolov9e.pt")
 
 # Carga imagen original
-image_path = "FOTO_0805214467.jpeg"  # Cambia al nombre de tu imagen
+image_path = "prueba4.jpeg"  # Cambia al nombre de tu imagen
 img = cv2.imread(image_path)
 
 # Puedes mostrarla si deseas:
