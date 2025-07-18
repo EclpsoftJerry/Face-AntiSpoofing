@@ -1,12 +1,12 @@
 #1. Genera el FERNET_KEY
-# from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet
 
-# def generate_key():
-#     key = Fernet.generate_key()
-#     print("FERNET_KEY:", key.decode())
+def generate_key():
+    key = Fernet.generate_key()
+    print("FERNET_KEY:", key.decode())
 
-# if __name__ == "__main__":
-#     generate_key()
+if __name__ == "__main__":
+    generate_key()
 
 #2. test_encrypt.py para encriptar cadena
 # from cryptography.fernet import Fernet
@@ -47,7 +47,7 @@
 #         print("DATABASE_URL desencriptado:", decrypted)  # Línea de prueba
 #         return decrypted
 
-# # Solo para test desde línea de comandos
+# # # Solo para test punto 3 desde línea de comandos
 # if __name__ == "__main__":
 #     encrypted_url = config("ENCRYPTED_DATABASE_URL")
 #     crypto = EncryptionHelper()

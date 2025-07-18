@@ -1,3 +1,6 @@
+cryptography
+fastapi
+gunicorn
 opencv-python
 torch
 torchvision
@@ -6,6 +9,13 @@ onnx
 onnxsim
 onnxruntime
 pandas
+passlib[bcrypt]
+python-decouple
+python-jose
+psycopg2-binary
+sqlalchemy
 tqdm
 tensorboardX
 scikit-learn
+ultralytics
+uvicorn
