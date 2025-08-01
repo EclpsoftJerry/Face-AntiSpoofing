@@ -11,6 +11,8 @@ services:
       - .env
     depends_on:
       - db
+    volumes:
+      - .:/app  # ← Para desarrollo, te permite ver los cambios sin rebuild
 
   db:
     image: postgres:16
