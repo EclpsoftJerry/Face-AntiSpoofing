@@ -8,6 +8,7 @@ class AuditLog(Base):
     id = Column(Integer, primary_key=True, index=True)
     
     username = Column(String, nullable=True)  # Usuario que hace la solicitud (si aplica)
+    document_id = Column(String, nullable=True)  # Cédula o documento de identidad (opcional)
     endpoint = Column(String, nullable=False)  # Ruta del endpoint, ej: /predict
     method = Column(String, nullable=False)    # Método HTTP: GET, POST, etc.    
     request_data = Column(Text)   # Información enviada en la solicitud (puede ser un resumen o JSON)

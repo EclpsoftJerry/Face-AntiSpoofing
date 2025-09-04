@@ -19,3 +19,4 @@ tensorboardX
 scikit-learn
 ultralytics
 uvicorn
+python-multipart

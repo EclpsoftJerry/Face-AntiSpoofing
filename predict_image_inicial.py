@@ -9,7 +9,7 @@ COLOR_REAL = (0, 255, 0)
 COLOR_FAKE = (0, 0, 255)
 COLOR_UNKNOWN = (127, 127, 127)
 
-def increased_crop(img, bbox: np.ndarray, bbox_inc: float = 1.6):
+def increased_crop(img, bbox: np.ndarray, bbox_inc: float = 1.75):
     real_h, real_w = img.shape[:2]
     x1, y1, x2, y2 = bbox[:4].astype(int)
     w, h = x2 - x1, y2 - y1

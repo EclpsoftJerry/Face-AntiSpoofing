@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import Form
 from sqlalchemy.orm import Session
 from typing import List
 from ultralytics import YOLO
@@ -18,6 +19,7 @@ from src.FaceAntiSpoofing import AntiSpoof
 from models.user import User
 from models.audit_log import AuditLog
 from predict_module import process_image
+from typing import Optional
 
 import shutil
 import uuid
@@ -57,7 +59,8 @@ async def predict(
     user: User = Depends(get_current_user),
     #image1: UploadFile = File(None),
     #image2: UploadFile = File(None) 
-    images: List[UploadFile] = File(...)   
+    images: List[UploadFile] = File(...),
+    id: Optional[str] = Form(None)
 ):
     logger.info("Inicio del endpoint /predict por usuario: %s", user.username)   
     # Filtrar solo imágenes válidas (que no sean None y tengan filename)
@@ -130,6 +133,7 @@ async def predict(
         # Registrar log en base de datos
         log = AuditLog(
             username=user.username,
+            document_id=id,
             endpoint=str(request.url.path),
             method=request.method,            
             request_data=", ".join(uploads),
@@ -144,6 +148,7 @@ async def predict(
         # Registrar error
         log = AuditLog(
             username=user.username,
+            document_id=id,
             endpoint=str(request.url.path),
             method=request.method,
             request_data="Error al subir imágenes",
