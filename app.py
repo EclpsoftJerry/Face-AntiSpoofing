@@ -20,12 +20,15 @@ from models.user import User
 from models.audit_log import AuditLog
 from predict_module import process_image
 from typing import Optional
+from skimage.metrics import structural_similarity as ssim
 
 import shutil
 import uuid
 import os
 import cv2
 import json
+import fitz
+import numpy as np
 
 # Cargar los modelos una sola vez
 logger.info("Cargando modelos una sola vez...")
@@ -164,3 +167,102 @@ async def predict(
         for p in paths:
             if os.path.exists(p):
                 os.remove(p)
+
+@app.post("/compare-pdf")
+async def compare_pdf(
+    request: Request,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+    id: Optional[str] = Form(None)
+):
+    """
+    Endpoint que recibe un PDF, extrae las dos primeras imágenes
+    y evalúa si son idénticas usando SSIM.
+    """
+    logger.info(f"Inicio del endpoint /compare-pdf por usuario: {user.username}")
+
+    try:
+        # Validar que se haya enviado el archivo
+        if not file:
+            raise HTTPException(status_code=400, detail="No se envió ningún archivo.")
+        # Validar que el archivo sea un PDF
+        if not file.filename.lower().endswith(".pdf"):
+            raise HTTPException(status_code=400, detail="El archivo debe ser de tipo PDF.")
+        
+        pdf_bytes = await file.read()
+        # Validar que el PDF no esté vacío
+        if not pdf_bytes:
+            raise HTTPException(status_code=400, detail="El PDF está vacío o no se pudo leer.")
+        
+        # Abrir el PDF con PyMuPDF
+        try:
+            pdf = fitz.open(stream=pdf_bytes, filetype="pdf")
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"El archivo no es un PDF válido: {e}")
+
+        images = []
+
+        # Extraer imágenes del PDF
+        for page_index in range(len(pdf)):
+            for img in pdf.get_page_images(page_index):
+                xref = img[0]
+                base = pdf.extract_image(xref)
+                np_img = np.frombuffer(base["image"], np.uint8)
+                img_cv = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+                if img_cv is not None:
+                    images.append(img_cv)
+        pdf.close()
+
+        logger.info(f"Total de imágenes detectadas: {len(images)}")
+
+        if len(images) < 2:
+            raise HTTPException(status_code=400, detail="No se encontraron al menos dos imágenes en el PDF.")
+
+        # Tomar las dos primeras imágenes
+        img1, img2 = images[0], images[1]
+        img1 = cv2.resize(img1, (256, 256))
+        img2 = cv2.resize(img2, (256, 256))
+        gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+        gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+
+        score, _ = ssim(gray1, gray2, full=True)
+        same_image = score >= 0.99
+
+        result_json = {            
+            "images_identical": bool(same_image), 
+            "similarity_score": float(round(float(score), 4)),                       
+            "interpretation": (
+                "The images appear identical (possible duplicate or retry with the same photo)."
+                if same_image
+                else "The images are different (valid liveness test)."
+            ),
+            "total_images_detected": len(images)
+        }        
+        logger.info(
+            f"SSIM result: {score:.4f} - "
+            f"{'Duplicate detected' if same_image else 'Different images'} | "
+            f"Total images: {len(images)}"
+        )
+
+        # Registrar log en base de datos
+        log = AuditLog(
+            username=user.username,
+            document_id=id,
+            endpoint=str(request.url.path),
+            method=request.method,
+            request_data=file.filename,
+            response_data=json.dumps(result_json),
+            status_code=200
+        )
+        db.add(log)
+        db.commit()
+
+        return JSONResponse(result_json)
+        
+    except HTTPException as e:
+        logger.warning(f"Error validado en /compare-pdf: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.error(f"Error general en /compare-pdf: {e}")
+        raise HTTPException(status_code=500, detail=f"Error procesando PDF: {e}")

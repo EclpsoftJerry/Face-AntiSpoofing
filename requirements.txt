@@ -12,6 +12,7 @@ pandas
 passlib[bcrypt]
 python-decouple
 python-jose
+PyMuPDF
 psycopg2-binary
 sqlalchemy
 tqdm
