@@ -19,3 +19,4 @@ saved_models/yolov8m.pt
 desarrollo.pem
 desarrollo.ppk
 Pruebas_face_AntiSpoofing/
+temp/
