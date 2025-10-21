@@ -18,6 +18,7 @@ sqlalchemy
 tqdm
 tensorboardX
 scikit-learn
+scikit-image
 ultralytics
 uvicorn
 python-multipart
