@@ -1,24 +1,30 @@
-cryptography
+# --- Core Backend ---
 fastapi
+uvicorn
 gunicorn
-opencv-python
+python-multipart
+# --- Seguridad y autenticación ---
+python-jose
+python-decouple
+passlib[bcrypt]==1.7.4
+bcrypt==3.2.2
+cryptography
+# --- ORM y base de datos ---
+sqlalchemy
+psycopg2-binary
+# --- IA / Detección Facial ---
 torch
 torchvision
-numpy
 onnx
 onnxsim
 onnxruntime
+opencv-python
+numpy
 pandas
-passlib[bcrypt]
-python-decouple
-python-jose
-PyMuPDF
-psycopg2-binary
-sqlalchemy
-tqdm
-tensorboardX
 scikit-learn
 scikit-image
+tensorboardX
+tqdm
 ultralytics
-uvicorn
-python-multipart
+# --- PDF ---
+PyMuPDF
